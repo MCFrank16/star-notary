@@ -78,22 +78,56 @@ it('lets user2 buy a star and decreases its balance in ether', async() => {
 it('can add the star name and star symbol properly', async() => {
     // 1. create a Star with different tokenId
     //2. Call the name and symbol properties in your Smart Contract and compare with the name and symbol provided
+    let instance = await StarNotary.deployed();
+    let tokenName = await instance.tokenName.call();
+    assert.equal(tokenName, 'Frank token');
+    let tokenSymbol = await instance.symbol.call();
+    assert.equal(tokenSymbol, 'RWF');
 });
 
 it('lets 2 users exchange stars', async() => {
+    let instance = await StarNotary.deployed()
     // 1. create 2 Stars with different tokenId
+    let tokenId1 = 45; let tokenId2 = 50;
+    await instance.createStar(`first star for ${tokenId1}`, tokenId1, { from: accounts[0]})
+    await instance.createStar(`first star for ${tokenId2}`, tokenId2, { from: accounts[1]})
+
+    let ownerBfr1 = await instance.ownerOf(tokenId1);
+    let ownerBfr2 = await instance.ownerOf(tokenId2);
+
     // 2. Call the exchangeStars functions implemented in the Smart Contract
+    await instance.exchangeStars(tokenId1, tokenId2)
+    let ownerAft1 = await instance.ownerOf(tokenId1)
+    let ownerAft2 = await instance.ownerOf(tokenId2)
+
     // 3. Verify that the owners changed
+    assert.equal(ownerAft1, ownerBfr2)
+    assert.equal(ownerAft2, ownerBfr1)
+
 });
 
 it('lets a user transfer a star', async() => {
     // 1. create a Star with different tokenId
+    let instance = await StarNotary.deployed();
+    let tokenId = 100;
+    await instance.createStar(`check this star ${tokenId}`, tokenId, { from: accounts[0] })
     // 2. use the transferStar function implemented in the Smart Contract
+    await instance.transferStar(accounts[1], tokenId)
     // 3. Verify the star owner changed.
+    let newHolder = await instance.ownerOf(tokenId)
+    assert.equal(newHolder, accounts[1])
 });
 
 it('lookUptokenIdToStarInfo test', async() => {
     // 1. create a Star with different tokenId
     // 2. Call your method lookUptokenIdToStarInfo
     // 3. Verify if you Star name is the same
+    let instance = await StarNotary.deployed();
+    let tokenId = 987
+
+    await instance.createStar('check this star' + tokenId, tokenId, { from: accounts[0] })
+
+    let starName = await instance.lookUptokenIdToStarInfo(tokenId);
+
+    assert.equal(starName, 'check this star' + tokenId)
 });
