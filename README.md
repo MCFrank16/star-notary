@@ -10,4 +10,4 @@ Token Name : "Frank token"
 Token Symbol : "RWF"
 
 # “Token Address” on the Rinkeby Network
-Token Address on the Rinkeby Network : 0x3fbF021941c9E8F60D6AA46392eA31d41988741A
+Token Address on the Rinkeby Network : 0xAc5ce3CA075025F5543aA874692c8507b1926dEc
